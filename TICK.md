@@ -2,7 +2,7 @@
 project: tooling-and-research
 schema_version: "1.0"
 created: Fri Jul 24 2026 02:23:40 GMT-0600 (Central Standard Time)
-updated: 2026-07-24T09:41:18.816Z
+updated: 2026-07-24T09:41:18.967Z
 default_workflow: [backlog, todo, in_progress, review, done]
 id_prefix: TASK
 next_id: 3
@@ -12,7 +12,7 @@ next_id: 3
 
 | Agent | Type | Role | Status | Working On | Last Active | Trust Level |
 |-------|------|------|--------|------------|-------------|-------------|
-| @codex | bot | engineer | idle | - | 2026-07-24T09:35:57.815Z | trusted |
+| @codex | bot | engineer | working | TASK-002 | 2026-07-24T09:41:18.967Z | trusted |
 
 ---
 
@@ -69,13 +69,13 @@ history:
 
 ```yaml
 id: TASK-002
-status: backlog
+status: in_progress
 priority: medium
 assigned_to: null
-claimed_by: null
+claimed_by: "@codex"
 created_by: "@troopdegen"
 created_at: 2026-07-24T09:41:18.816Z
-updated_at: 2026-07-24T09:41:18.816Z
+updated_at: 2026-07-24T09:41:18.967Z
 tags:
   - pi-coding-agent-daily-driver
   - docs
@@ -84,6 +84,11 @@ history:
   - ts: 2026-07-24T09:41:18.816Z
     who: "@troopdegen"
     action: created
+  - ts: 2026-07-24T09:41:18.967Z
+    who: "@codex"
+    action: claimed
+    from: backlog
+    to: in_progress
 ```
 
 > Document a safe prompt for asking Pi Coding Agent to expand the Nebius Token Factory model list without breaking the live default config.
