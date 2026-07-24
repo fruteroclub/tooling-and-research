@@ -2,10 +2,10 @@
 project: tooling-and-research
 schema_version: "1.0"
 created: Fri Jul 24 2026 02:23:40 GMT-0600 (Central Standard Time)
-updated: 2026-07-24T09:42:06.218Z
+updated: 2026-07-24T09:53:32.381Z
 default_workflow: [backlog, todo, in_progress, review, done]
 id_prefix: TASK
-next_id: 3
+next_id: 4
 ---
 
 ## Agents
@@ -103,3 +103,26 @@ history:
 ```
 
 > Document a safe prompt for asking Pi Coding Agent to expand the Nebius Token Factory model list without breaking the live default config.
+
+### TASK-003 · Correct Pi model menu and add comparison table
+
+```yaml
+id: TASK-003
+status: backlog
+priority: medium
+assigned_to: null
+claimed_by: null
+created_by: "@troopdegen"
+created_at: 2026-07-24T09:53:32.381Z
+updated_at: 2026-07-24T09:53:32.381Z
+tags:
+  - pi-coding-agent-daily-driver
+  - docs
+  - models
+history:
+  - ts: 2026-07-24T09:53:32.381Z
+    who: "@troopdegen"
+    action: created
+```
+
+> Remove the duplicate Qwen baseline model from the Pi VPS runbook and add a compact model comparison table for default and suggested Token Factory models.
