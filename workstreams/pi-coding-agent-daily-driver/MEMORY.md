@@ -38,3 +38,7 @@
 - 2026-07-24: Added a public runbook section, "Add More Models Safely", with a
   prompt for Pi to back up configs, fetch the live Token Factory catalog, add a
   diverse model menu, validate JSON, preserve defaults, and smoke test changes.
+- 2026-07-24: Corrected the runbook baseline model stack so it no longer uses
+  Qwen twice. Baseline is Qwen3 235B default, Nemotron 3 Nano Omni cheap
+  fallback, and DeepSeek V4 Pro escalation. Added an 8-column model comparison
+  table grounded in live Token Factory catalog metadata.

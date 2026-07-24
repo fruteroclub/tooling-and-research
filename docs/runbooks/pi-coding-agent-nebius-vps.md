@@ -12,11 +12,27 @@ much lower Token Factory price than the most expensive long-context models.
 | Role | Model | Use |
 | --- | --- | --- |
 | Default | `Qwen/Qwen3-235B-A22B-Instruct-2507` | Main Pi Coding Agent driver. |
-| Cheap fallback | `Qwen/Qwen3-30B-A3B-Instruct-2507` | Fast inexpensive edits and checks. |
+| Cheap fallback | `nvidia/Nemotron-3-Nano-Omni` | Low-cost Nebius/NVIDIA option for routine edits and checks. |
 | Escalation | `deepseek-ai/DeepSeek-V4-Pro` | Hard tasks or very large-context repo work. |
 
 Pricing in the Pi config is per million tokens. Verify live prices in Token
 Factory before using this for budget planning.
+
+## Model Comparison For Pi Coding Agent
+
+This table uses the live Nebius Token Factory catalog as the reference for
+prices, context, feature support, and model positioning.
+
+| Status | Model | Price $/M in/out | Context | Features | Suggested use | Catalog signal | Notes |
+| --- | --- | --- | --- | --- | --- | --- | --- |
+| Installed default | `Qwen/Qwen3-235B-A22B-Instruct-2507` | `0.20 / 0.60` | 262K | tools, JSON, structured outputs | Main daily driver | Flagship Qwen tuned for reasoning, chat, and tool use. | Strong balance of capability, context, and cost. |
+| Installed fallback | `nvidia/Nemotron-3-Nano-Omni` | `0.06 / 0.24` | 262K | tools, JSON, structured outputs, reasoning | Cheap routine edits and checks | NVIDIA model positioned for efficient agentic AI. | Good Nebius/NVIDIA content angle. |
+| Installed escalation | `deepseek-ai/DeepSeek-V4-Pro` | `1.75 / 3.50` | 1M | tools, JSON, structured outputs, reasoning | Hard long-horizon repo work | Designed for advanced coding and long-horizon agent workflows. | Expensive; use deliberately. |
+| Suggested addition | `openai/gpt-oss-120b` | `0.15 / 0.60` | 131K | tools, JSON, structured outputs, reasoning | Open agentic model comparison | Open-weight agentic model with strong tool use. | Good benchmark/content contrast. |
+| Suggested addition | `NousResearch/Hermes-4-70B` | `0.13 / 0.40` | 131K | tools, JSON, structured outputs, reasoning | Hermes ecosystem experiments | Compact Hermes model for reasoning and coding. | Fits Hermes/NemoClaw research. |
+| Suggested addition | `moonshotai/Kimi-K2.7-Code` | `0.95 / 4.00` | 8K | tools, JSON, structured outputs, reasoning | Code-specialist experiments | Code-focused reasoning model for software engineering and tool use. | Context is small and output is pricey. |
+| Suggested addition | `meta-llama/Llama-3.3-70B-Instruct` | `0.13 / 0.40` | 131K | tools | General baseline | Refined Llama instruct model with broad benchmark performance. | Useful familiar open-model baseline. |
+| Suggested addition | `nvidia/nemotron-3-super-120b-a12b` | `0.30 / 0.90` | 262K | tools, JSON, structured outputs, reasoning | Stronger NVIDIA escalation | Nemotron Super is positioned for multi-agent and complex reasoning. | More expensive than Nano Omni, cheaper than DeepSeek. |
 
 ## Prerequisites
 
@@ -108,7 +124,7 @@ curl -fsS "https://api.tokenfactory.nebius.com/v1/models?verbose=true" \
   -H "Accept: application/json" \
 | jq -r '.data[]
   | select(.id == "Qwen/Qwen3-235B-A22B-Instruct-2507"
-        or .id == "Qwen/Qwen3-30B-A3B-Instruct-2507"
+        or .id == "nvidia/Nemotron-3-Nano-Omni"
         or .id == "deepseek-ai/DeepSeek-V4-Pro")
   | "\(.id) | context=\(.context_length) | prompt=\(.pricing.prompt) | completion=\(.pricing.completion)"'
 ```
@@ -148,15 +164,15 @@ cat > "$HOME/.pi/agent/models.json" <<'EOF'
           }
         },
         {
-          "id": "Qwen/Qwen3-30B-A3B-Instruct-2507",
-          "name": "Qwen3 30B A3B Instruct via Nebius Token Factory",
+          "id": "nvidia/Nemotron-3-Nano-Omni",
+          "name": "Nemotron 3 Nano Omni via Nebius Token Factory",
           "input": ["text"],
           "reasoning": false,
           "contextWindow": 262144,
           "maxTokens": 8192,
           "cost": {
-            "input": 0.1,
-            "output": 0.3,
+            "input": 0.06,
+            "output": 0.24,
             "cacheRead": 0,
             "cacheWrite": 0
           },
@@ -205,7 +221,7 @@ cat > "$HOME/.pi/agent/settings.json" <<'EOF'
   "defaultThinkingLevel": "off",
   "enabledModels": [
     "nebius-token-factory/Qwen/Qwen3-235B-A22B-Instruct-2507",
-    "nebius-token-factory/Qwen/Qwen3-30B-A3B-Instruct-2507",
+    "nebius-token-factory/nvidia/Nemotron-3-Nano-Omni",
     "nebius-token-factory/deepseek-ai/DeepSeek-V4-Pro"
   ]
 }
@@ -295,10 +311,11 @@ Good content-oriented models to consider:
 
 | Role | Model | Why |
 | --- | --- | --- |
-| Cheap Nebius/NVIDIA option | `nvidia/Nemotron-3-Nano-Omni` | Very low cost, large context, strong Nebius-native story. |
 | Open agentic model | `openai/gpt-oss-120b` | Useful contrast against closed coding models; tools/json/structured outputs. |
 | Hermes ecosystem model | `NousResearch/Hermes-4-70B` | Fits Hermes/NemoClaw content and agent-runtime experiments. |
 | Code specialist | `moonshotai/Kimi-K2.7-Code` | Code-focused model; worth testing even though its context is smaller. |
+| Familiar open baseline | `meta-llama/Llama-3.3-70B-Instruct` | Broadly recognized model family for comparison. |
+| Stronger NVIDIA escalation | `nvidia/nemotron-3-super-120b-a12b` | Higher-capability NVIDIA/Nebius option than Nano Omni. |
 | Expensive escalation | `deepseek-ai/DeepSeek-V4-Pro` | Keep for hard or very large-context tasks. |
 
 Paste this prompt into Pi from the VPS directory where you want it to work:
@@ -335,13 +352,15 @@ Hard safety rules:
     smoke test.
 
 Please add these models if they are available in the live catalog:
-- nvidia/Nemotron-3-Nano-Omni
 - openai/gpt-oss-120b
 - NousResearch/Hermes-4-70B
 - moonshotai/Kimi-K2.7-Code
+- meta-llama/Llama-3.3-70B-Instruct
+- nvidia/nemotron-3-super-120b-a12b
 
 Keep these existing roles:
 - Qwen/Qwen3-235B-A22B-Instruct-2507 as the default daily-driver model.
+- nvidia/Nemotron-3-Nano-Omni as the cheap Nebius/NVIDIA fallback model.
 - deepseek-ai/DeepSeek-V4-Pro as the expensive escalation model.
 
 Implementation requirements:
