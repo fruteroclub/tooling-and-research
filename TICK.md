@@ -2,7 +2,7 @@
 project: tooling-and-research
 schema_version: "1.0"
 created: Fri Jul 24 2026 02:23:40 GMT-0600 (Central Standard Time)
-updated: 2026-07-24T10:35:55.180Z
+updated: 2026-07-24T10:35:55.348Z
 default_workflow: [backlog, todo, in_progress, review, done]
 id_prefix: TASK
 next_id: 6
@@ -12,7 +12,7 @@ next_id: 6
 
 | Agent | Type | Role | Status | Working On | Last Active | Trust Level |
 |-------|------|------|--------|------------|-------------|-------------|
-| @codex | bot | engineer | working | TASK-005 | 2026-07-24T10:35:55.180Z | trusted |
+| @codex | bot | engineer | idle | - | 2026-07-24T10:35:55.348Z | trusted |
 
 ---
 
@@ -190,13 +190,13 @@ history:
 
 ```yaml
 id: TASK-005
-status: in_progress
+status: done
 priority: high
 assigned_to: null
-claimed_by: "@codex"
+claimed_by: null
 created_by: "@troopdegen"
 created_at: 2026-07-24T10:30:10.054Z
-updated_at: 2026-07-24T10:35:55.180Z
+updated_at: 2026-07-24T10:35:55.348Z
 tags:
   - hermes
   - nebius-token-factory
@@ -219,6 +219,11 @@ history:
       custom:nebius-token-factory in ~/.hermes/config.yaml, validate direct
       Token Factory and Hermes chat. Scrubbed the active workstream/project
       wording so this is no longer framed as a runtime installation path."
+  - ts: 2026-07-24T10:35:55.348Z
+    who: "@codex"
+    action: completed
+    from: in_progress
+    to: done
 ```
 
 > Replace the over-scoped NemoClaw/Docker Hermes runbook with a direct Hermes configuration-extension guide for Nebius Token Factory endpoints.
