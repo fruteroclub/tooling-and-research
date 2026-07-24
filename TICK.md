@@ -2,7 +2,7 @@
 project: tooling-and-research
 schema_version: "1.0"
 created: Fri Jul 24 2026 02:23:40 GMT-0600 (Central Standard Time)
-updated: 2026-07-24T08:28:51.681Z
+updated: 2026-07-24T08:31:42.217Z
 default_workflow: [backlog, todo, in_progress, review, done]
 id_prefix: TASK
 next_id: 2
@@ -12,7 +12,7 @@ next_id: 2
 
 | Agent | Type | Role | Status | Working On | Last Active | Trust Level |
 |-------|------|------|--------|------------|-------------|-------------|
-| @codex | bot | engineer | working | TASK-001 | 2026-07-24T08:28:51.681Z | trusted |
+| @codex | bot | engineer | working | TASK-001 | 2026-07-24T08:31:42.217Z | trusted |
 
 ---
 
@@ -28,7 +28,7 @@ assigned_to: null
 claimed_by: "@codex"
 created_by: "@troopdegen"
 created_at: 2026-07-24T08:24:25.455Z
-updated_at: 2026-07-24T08:28:51.681Z
+updated_at: 2026-07-24T08:31:42.217Z
 tags:
   - pi-coding-agent-daily-driver
   - pi
@@ -43,6 +43,14 @@ history:
     action: claimed
     from: backlog
     to: in_progress
+  - ts: 2026-07-24T08:31:42.217Z
+    who: "@codex"
+    action: commented
+    note: "Drafted and published the public-safe Pi Coding Agent on Nebius Token
+      Factory VPS guide at
+      https://github.com/fruteroclub/tooling-and-research/blob/main/docs/runboo\
+      ks/pi-coding-agent-nebius-vps.md. Remaining work: run the guide on the
+      target VPS and adjust any drift."
 ```
 
 > Create and maintain the daily-driver Pi Coding Agent setup for a Nebius-backed VPS, including Token Factory model selection, config files, validation commands, and handoff docs.
