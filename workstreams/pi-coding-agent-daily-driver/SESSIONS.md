@@ -7,3 +7,4 @@
 2026-07-24 02:55 CST - codex - recorded Mel's end-to-end VPS validation: Pi launches with the configured Nebius Token Factory models.
 2026-07-24 03:05 CST - codex - added the "Add More Models Safely" runbook section with a Pi-ready prompt and rollback guidance.
 2026-07-24 03:15 CST - codex - removed the duplicate Qwen baseline, added Nemotron Nano Omni as fallback, and added the model comparison table.
+2026-07-24 04:55 CST - codex - added a repo-hosted Pi Nebius repair script after heredoc paste failures broke the VPS Pi config; patched the runbook to prefer the script and omit optional cost fields.

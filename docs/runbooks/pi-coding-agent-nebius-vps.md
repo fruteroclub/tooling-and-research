@@ -133,6 +133,17 @@ Expected: three lines, one for each configured model.
 
 ## 5. Configure Pi Models
 
+Preferred repair-safe path:
+
+```bash
+curl -fsSL https://raw.githubusercontent.com/fruteroclub/tooling-and-research/main/code/scripts/repair-pi-nebius-config.sh | bash
+```
+
+This writes the baseline provider config, backs up any existing Pi config, and
+avoids pasting a long JSON heredoc into the terminal.
+
+Manual equivalent:
+
 Run:
 
 ```bash
@@ -153,12 +164,6 @@ cat > "$HOME/.pi/agent/models.json" <<'EOF'
           "reasoning": false,
           "contextWindow": 262144,
           "maxTokens": 8192,
-          "cost": {
-            "input": 0.2,
-            "output": 0.6,
-            "cacheRead": 0,
-            "cacheWrite": 0
-          },
           "compat": {
             "supportsReasoningEffort": false
           }
@@ -170,12 +175,6 @@ cat > "$HOME/.pi/agent/models.json" <<'EOF'
           "reasoning": false,
           "contextWindow": 262144,
           "maxTokens": 8192,
-          "cost": {
-            "input": 0.06,
-            "output": 0.24,
-            "cacheRead": 0,
-            "cacheWrite": 0
-          },
           "compat": {
             "supportsReasoningEffort": false
           }
@@ -187,12 +186,6 @@ cat > "$HOME/.pi/agent/models.json" <<'EOF'
           "reasoning": false,
           "contextWindow": 1048576,
           "maxTokens": 8192,
-          "cost": {
-            "input": 1.75,
-            "output": 3.5,
-            "cacheRead": 0,
-            "cacheWrite": 0
-          },
           "compat": {
             "supportsReasoningEffort": false
           }
@@ -208,6 +201,10 @@ chmod 600 "$HOME/.pi/agent/models.json"
 
 This uses `apiKey: "$NEBIUS_API_KEY"` deliberately. Pi resolves the environment
 variable at request time.
+
+Pricing fields are intentionally omitted in the baseline config. Pi treats
+`cost` as optional, and omitting it avoids schema drift between Pi versions. Add
+pricing later only after `pi --list-models` validates the baseline provider.
 
 ## 6. Configure Pi Defaults
 
@@ -377,13 +374,10 @@ Implementation requirements:
   - input: ["text"]
   - contextWindow from context_length
   - maxTokens: 8192
-  - cost using per-million-token pricing:
-    - input = pricing.prompt * 1000000
-    - output = pricing.completion * 1000000
-    - cacheRead = 0
-    - cacheWrite = 0
   - reasoning: false
   - compat.supportsReasoningEffort: false
+- Omit cost fields on the first working edit. Add pricing later only after the
+  model list validates against this installed Pi version.
 - Add each enabled model to settings.json as:
   nebius-token-factory/<model-id>
 - Preserve existing enabled models.

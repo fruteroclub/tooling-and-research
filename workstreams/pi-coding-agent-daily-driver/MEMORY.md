@@ -42,3 +42,11 @@
   Qwen twice. Baseline is Qwen3 235B default, Nemotron 3 Nano Omni cheap
   fallback, and DeepSeek V4 Pro escalation. Added an 8-column model comparison
   table grounded in live Token Factory catalog metadata.
+- 2026-07-24: Mel hit a Pi config break while trying to update Hermes. Long
+  pasted heredocs into the VPS shell were interrupted, leaving
+  `~/.pi/agent/models.json` malformed. Added
+  `code/scripts/repair-pi-nebius-config.sh` so recovery is a one-line
+  `curl | bash` fetch from GitHub instead of pasting JSON.
+- 2026-07-24: Pi v0.82.0 accepted the repair script's generated config in a
+  temp-home validation. The baseline now omits optional `cost` fields to avoid
+  installed-version schema drift; add pricing only after the provider validates.
