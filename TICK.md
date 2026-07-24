@@ -2,7 +2,7 @@
 project: tooling-and-research
 schema_version: "1.0"
 created: Fri Jul 24 2026 02:23:40 GMT-0600 (Central Standard Time)
-updated: 2026-07-24T09:54:23.417Z
+updated: 2026-07-24T09:54:23.566Z
 default_workflow: [backlog, todo, in_progress, review, done]
 id_prefix: TASK
 next_id: 4
@@ -12,7 +12,7 @@ next_id: 4
 
 | Agent | Type | Role | Status | Working On | Last Active | Trust Level |
 |-------|------|------|--------|------------|-------------|-------------|
-| @codex | bot | engineer | working | TASK-003 | 2026-07-24T09:54:23.417Z | trusted |
+| @codex | bot | engineer | idle | - | 2026-07-24T09:54:23.566Z | trusted |
 
 ---
 
@@ -108,13 +108,13 @@ history:
 
 ```yaml
 id: TASK-003
-status: in_progress
+status: done
 priority: medium
 assigned_to: null
-claimed_by: "@codex"
+claimed_by: null
 created_by: "@troopdegen"
 created_at: 2026-07-24T09:53:32.381Z
-updated_at: 2026-07-24T09:54:23.417Z
+updated_at: 2026-07-24T09:54:23.566Z
 tags:
   - pi-coding-agent-daily-driver
   - docs
@@ -135,6 +135,11 @@ history:
       fallback, and DeepSeek escalation; added an 8-column model comparison
       table and updated the expansion prompt to avoid re-adding the installed
       fallback.
+  - ts: 2026-07-24T09:54:23.566Z
+    who: "@codex"
+    action: completed
+    from: in_progress
+    to: done
 ```
 
 > Remove the duplicate Qwen baseline model from the Pi VPS runbook and add a compact model comparison table for default and suggested Token Factory models.
