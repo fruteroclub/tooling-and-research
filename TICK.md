@@ -2,7 +2,7 @@
 project: tooling-and-research
 schema_version: "1.0"
 created: Fri Jul 24 2026 02:23:40 GMT-0600 (Central Standard Time)
-updated: 2026-07-24T10:59:40.973Z
+updated: 2026-07-24T11:01:33.751Z
 default_workflow: [backlog, todo, in_progress, review, done]
 id_prefix: TASK
 next_id: 8
@@ -12,7 +12,7 @@ next_id: 8
 
 | Agent | Type | Role | Status | Working On | Last Active | Trust Level |
 |-------|------|------|--------|------------|-------------|-------------|
-| @codex | bot | engineer | working | TASK-007 | 2026-07-24T10:59:40.973Z | trusted |
+| @codex | bot | engineer | working | TASK-007 | 2026-07-24T11:01:33.751Z | trusted |
 
 ---
 
@@ -277,7 +277,7 @@ assigned_to: null
 claimed_by: "@codex"
 created_by: "@troopdegen"
 created_at: 2026-07-24T10:59:40.802Z
-updated_at: 2026-07-24T10:59:40.973Z
+updated_at: 2026-07-24T11:01:33.751Z
 tags:
   - hermes
   - nebius-token-factory
@@ -292,4 +292,12 @@ history:
     action: claimed
     from: backlog
     to: in_progress
+  - ts: 2026-07-24T11:01:33.751Z
+    who: "@codex"
+    action: commented
+    note: Added code/scripts/configure-hermes-nebius-token-factory.sh for one-line
+      Hermes provider setup. The script backs up ~/.hermes config/env, sources
+      the Pi env only as a key source, writes only Hermes files, idempotently
+      merges custom:nebius-token-factory plus aliases, and updates the runbook
+      to prefer the script.
 ```
