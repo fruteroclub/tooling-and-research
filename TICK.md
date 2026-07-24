@@ -2,10 +2,10 @@
 project: tooling-and-research
 schema_version: "1.0"
 created: Fri Jul 24 2026 02:23:40 GMT-0600 (Central Standard Time)
-updated: 2026-07-24T10:35:55.348Z
+updated: 2026-07-24T10:57:09.272Z
 default_workflow: [backlog, todo, in_progress, review, done]
 id_prefix: TASK
-next_id: 6
+next_id: 7
 ---
 
 ## Agents
@@ -227,3 +227,25 @@ history:
 ```
 
 > Replace the over-scoped NemoClaw/Docker Hermes runbook with a direct Hermes configuration-extension guide for Nebius Token Factory endpoints.
+
+### TASK-006 · Add Pi Nebius repair script and safer baseline config
+
+```yaml
+id: TASK-006
+status: backlog
+priority: high
+assigned_to: null
+claimed_by: null
+created_by: "@troopdegen"
+created_at: 2026-07-24T10:57:09.272Z
+updated_at: 2026-07-24T10:57:09.272Z
+tags:
+  - pi-coding-agent-daily-driver
+  - nebius-token-factory
+  - docs
+  - fix
+history:
+  - ts: 2026-07-24T10:57:09.272Z
+    who: "@troopdegen"
+    action: created
+```
