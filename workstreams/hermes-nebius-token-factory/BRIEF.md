@@ -11,8 +11,8 @@ last_updated: 2026-07-24
 
 ## Identity
 
-Define and maintain the reusable VPS setup path for Hermes/NemoClaw with Nebius
-Token Factory as the inference provider.
+Define and maintain the reusable VPS setup path for adding Nebius Token Factory
+as an OpenAI-compatible provider in an existing Hermes install.
 
 The setup should let Mel run Hermes experiments without spending Pi Coding
 Agent tokens, while preserving the existing Pi daily-driver setup and any
@@ -26,26 +26,24 @@ must inspect and back up before changing anything.
 
 ## Who Needs It
 
-Mel, Frutero DevRel, and future tooling experiments that need Hermes,
-NemoClaw/OpenShell, or agent-human conversation infrastructure backed by Nebius
-Token Factory credits.
+Mel, Frutero DevRel, and future tooling experiments that need Hermes or
+agent-human conversation infrastructure backed by Nebius Token Factory credits.
 
 ## Done Means
 
-- A public-safe runbook exists for configuring NemoClaw-managed Hermes with
-  Nebius Token Factory.
-- The runbook covers existing-install inspection, secret handling, install or
-  re-onboarding, gateway validation, and the tool-calling gate.
-- The guide makes clear that Hermes should not edit files until tool use is
-  proven by logs.
+- A public-safe runbook exists for extending Hermes config with a named Nebius
+  Token Factory provider.
+- The runbook covers existing-install inspection, secret handling, config
+  backups, YAML merge guidance, direct provider validation, and Hermes chat
+  validation.
+- The guide avoids unrelated runtime installation paths and keeps the change
+  scoped to Hermes config.
 - The runbook is linked from the docs index.
 
 ## Scope
 
-In scope: Hermes/NemoClaw setup, Token Factory custom provider mapping,
-validated model defaults, VPS checks, dashboard/API access, and operational
-troubleshooting.
+In scope: Hermes config extension, Token Factory custom provider mapping,
+validated model defaults, VPS checks, and operational troubleshooting.
 
 Out of scope: Pi Coding Agent config changes, public webinar curriculum,
-messaging channel setup, and direct unsupported edits to unknown Hermes config
-files.
+messaging channel setup, and runtime installation or replacement work.

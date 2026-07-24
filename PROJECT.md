@@ -39,11 +39,10 @@ excludes:
 
 ## Current state
 
-status: active - Pi setup validated; Hermes runbook drafted.
-current_phase: reusable Nebius Token Factory agent setup for Pi and
-Hermes/NemoClaw.
-next_milestone: validate the Hermes/NemoClaw runbook on the target VPS and
-record whether the Hermes tool-calling gate passes.
+status: active - Pi setup validated; Hermes provider-config runbook corrected.
+current_phase: reusable Nebius Token Factory agent setup for Pi and Hermes.
+next_milestone: apply the Hermes provider-config runbook on the target VPS and
+record whether Hermes works with the Nebius Token Factory provider.
 blockers: Hermes VPS-side validation is still pending.
 
 ## Operational links

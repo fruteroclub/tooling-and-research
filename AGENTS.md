@@ -47,7 +47,7 @@ tooling-and-research/
 - [`pi-coding-agent-daily-driver`](workstreams/pi-coding-agent-daily-driver/BRIEF.md)
   - Pi Coding Agent setup for a Nebius Token Factory-backed VPS.
 - [`hermes-nebius-token-factory`](workstreams/hermes-nebius-token-factory/BRIEF.md)
-  - Hermes/NemoClaw setup for a Nebius Token Factory-backed VPS.
+  - Direct Hermes provider configuration for a Nebius Token Factory-backed VPS.
 
 ## Conventions
 

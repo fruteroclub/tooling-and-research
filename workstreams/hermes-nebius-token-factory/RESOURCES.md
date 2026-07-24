@@ -9,13 +9,15 @@
   `../../docs/runbooks/hermes-nebius-token-factory-vps.md`.
 - Public GitHub repository:
   https://github.com/fruteroclub/tooling-and-research
-- NemoClaw prerequisites:
-  https://docs.nvidia.com/nemoclaw/user-guide/hermes/get-started/prerequisites.md
-- NemoClaw Hermes quickstart:
-  https://docs.nvidia.com/nemoclaw/user-guide/hermes/get-started/quickstart.md
+- Hermes source:
+  https://github.com/NousResearch/hermes-agent
+- Hermes configuration:
+  https://hermes-agent.nousresearch.com/docs/user-guide/configuration
+- Hermes custom providers:
+  https://hermes-agent.nousresearch.com/docs/integrations/providers
 - Nebius Token Factory quickstart:
   https://docs.tokenfactory.nebius.com/quickstart
 - Token Factory model list docs:
   https://docs.tokenfactory.nebius.com/api-reference/models/list-models.md
-- Related prior Nebius guide:
-  `../../../nebius/code/nebius-fde-trainer-webinar-series/01-nebius-cloud-builder-environment/written-guide.md`.
+- Related Pi guide:
+  `../../docs/runbooks/pi-coding-agent-nebius-vps.md`.

@@ -1,541 +1,347 @@
 # Hermes With Nebius Token Factory On A VPS
 
-This guide configures a VPS so Hermes can use Nebius Token Factory through the
-NemoClaw-managed Hermes path.
+This guide adds Nebius Token Factory as an OpenAI-compatible provider in an
+existing Hermes install.
 
-Use this when you want Hermes available on the same VPS as Pi Coding Agent, but
-you do not want to spend Pi tokens asking Pi to configure it.
+Use it when Hermes already runs on the VPS and you only want to extend its model
+configuration. It does not install a separate runtime, create containers, or
+replace a working Hermes setup.
 
-The known-good path is:
+## Target Config
 
 ```text
-nemohermes -> Hermes Agent gateway -> Nebius Token Factory -> model response
+Hermes -> custom provider -> Nebius Token Factory -> selected model
 ```
 
-Do not use Hermes for file edits until it passes the tool-calling gate in
-Step 8. A healthy dashboard and a working chat endpoint are not enough.
+Prerequisites:
 
-## Model Stack
-
-| Role | Model | Why |
-| --- | --- | --- |
-| Validated installer default | `nvidia/NVIDIA-Nemotron-3-Nano-30B-A3B` | Prior NemoClaw/Hermes validation used this model successfully through Token Factory. |
-| Daily-driver experiment | `Qwen/Qwen3-235B-A22B-Instruct-2507` | Same strong default as the Pi setup; large context and reasonable cost. |
-| Hermes ecosystem experiment | `NousResearch/Hermes-4-70B` | Useful for content around Hermes/NemoClaw alignment. |
-| Expensive escalation | `deepseek-ai/DeepSeek-V4-Pro` | Large-context fallback for hard agent tasks, if cost is acceptable. |
-
-Current Token Factory catalog prices observed on 2026-07-24:
-
-| Model | Context | Price $/M in/out |
-| --- | --- | --- |
-| `nvidia/NVIDIA-Nemotron-3-Nano-30B-A3B` | 262K | `0.06 / 0.24` |
-| `Qwen/Qwen3-235B-A22B-Instruct-2507` | 262K | `0.20 / 0.60` |
-| `NousResearch/Hermes-4-70B` | 131K | `0.13 / 0.40` |
-| `deepseek-ai/DeepSeek-V4-Pro` | 1M | `1.75 / 3.50` |
-
-Verify live prices before budget planning.
-
-## Prerequisites
-
-- Ubuntu VPS with shell access.
-- Docker available to the user that will run Hermes.
-- Node.js `22.19` or newer and npm `10` or newer.
-- `curl`, `jq`, `git`, `binutils`, and `zstd`.
+- Hermes already installed on the VPS.
 - Nebius Token Factory API key stored outside the repo.
-- The Pi runbook completed, or at least `~/.config/pi-nebius/env` available.
+- `curl` available for smoke tests.
+- `jq` optional but useful for reading JSON responses.
 
-NemoClaw's current docs list `4 vCPU`, `8 GB RAM`, and `20 GB` free disk as the
-minimum, with `16 GB RAM` and `40 GB` free disk recommended. On small VPSs, add
-swap before building the sandbox.
-
-## 1. Inspect The Existing Hermes State
-
-Run this first. The goal is to learn what is already running before installing
-or replacing anything.
-
-```bash
-set +x
-
-ps aux | grep -Ei 'hermes|nemo|openshell' | grep -v grep || true
-
-command -v nemohermes || true
-command -v nemoclaw || true
-command -v openshell || true
-command -v hermes || true
-
-ls -la "$HOME/.hermes" "$HOME/.local/bin" 2>/dev/null || true
-systemctl --user status hermes 2>/dev/null || true
-```
-
-If you see a process like this, Hermes is already running:
+Recommended default:
 
 ```text
-~/.hermes/hermes-agent/venv/bin/python -m hermes_cli.main gateway run --replace
+Qwen/Qwen3-235B-A22B-Instruct-2507
 ```
 
-Do not kill it yet. Continue through the read-only checks and create backups
-before changing anything.
+Useful additions:
 
-## 2. Load The Nebius Token Factory Key
+| Alias | Model | Use |
+| --- | --- | --- |
+| `nebius-qwen` | `Qwen/Qwen3-235B-A22B-Instruct-2507` | Main coding-agent default. |
+| `nebius-cheap` | `nvidia/Nemotron-3-Nano-Omni` | Lower-cost routing tests and light tasks. |
+| `nebius-big` | `deepseek-ai/DeepSeek-V4-Pro` | Expensive escalation for large-context work. |
 
-If you completed the Pi runbook, reuse the same private env file:
+After Step 2, verify live model names and pricing before publishing budget
+claims:
+
+```bash
+curl -fsS "https://api.tokenfactory.nebius.com/v1/models?verbose=true" \
+  -H "Authorization: Bearer $NEBIUS_API_KEY" \
+  -H "Accept: application/json" \
+| jq -r '.data[] | select(.id | test("Qwen3-235B|Nemotron-3-Nano-Omni|DeepSeek-V4-Pro")) | [.id, .context_length, .pricing.prompt, .pricing.completion] | @tsv'
+```
+
+## 1. Inspect Existing Hermes
+
+Run these read-only checks first:
 
 ```bash
 set +x
 
-source "$HOME/.config/pi-nebius/env"
+command -v hermes || true
+hermes --version 2>/dev/null || true
+hermes config get model 2>/dev/null || true
+
+ls -la "$HOME/.hermes" 2>/dev/null || true
+ps aux | grep -Ei 'hermes' | grep -v grep || true
+```
+
+If Hermes is currently running, leave it running while you inspect and back up
+the config. The provider change below is file-level config; restart only if the
+running process does not pick up the change.
+
+## 2. Load The Token Factory Key
+
+If you completed the Pi Coding Agent guide, reuse its private env file:
+
+```bash
+set +x
+
+if [ -f "$HOME/.config/pi-nebius/env" ]; then
+  source "$HOME/.config/pi-nebius/env"
+fi
 
 if [ -z "${NEBIUS_API_KEY:-}" ]; then
   echo "FAIL: NEBIUS_API_KEY is not loaded"
   return 1 2>/dev/null || exit 1
 fi
 
-echo "OK: Token Factory key is loaded"
+echo "OK: NEBIUS_API_KEY is loaded"
 ```
 
 Do not print the key. Do not paste it into chat. Do not commit it.
 
-## 3. Check System Readiness
-
-Install the small packages NemoClaw expects:
-
-```bash
-sudo apt-get update
-sudo apt-get install -y ca-certificates curl git jq binutils zstd
-```
-
-Check versions and Docker access:
-
-```bash
-node -v
-npm -v
-docker info --format 'Server={{.ServerVersion}} CPUs={{.NCPU}} MemBytes={{.MemTotal}}'
-```
-
-If `docker info` fails because of permissions, finish Docker group setup before
-continuing:
-
-```bash
-sudo usermod -aG docker "$USER"
-newgrp docker
-docker info --format 'Server={{.ServerVersion}} CPUs={{.NCPU}} MemBytes={{.MemTotal}}'
-```
-
-Members of the `docker` group effectively control root-level container access on
-the host. Only do this for trusted VPS users.
-
-## 4. Confirm Token Factory Access
-
-Set a model variable for the first Hermes setup. Start with the prior validated
-Nemotron model:
-
-```bash
-export NEBIUS_TF_MODEL="${NEBIUS_TF_MODEL:-nvidia/NVIDIA-Nemotron-3-Nano-30B-A3B}"
-```
-
-Confirm the selected model exists in the live Token Factory catalog:
-
-```bash
-curl -fsS "https://api.tokenfactory.nebius.com/v1/models?verbose=true" \
-  -H "Authorization: Bearer $NEBIUS_API_KEY" \
-  -H "Accept: application/json" \
-| jq -r --arg model "$NEBIUS_TF_MODEL" '
-    .data[]
-    | select(.id == $model)
-    | "\(.id) | context=\(.context_length) | prompt=\(.pricing.prompt) | completion=\(.pricing.completion)"
-  '
-```
-
-Expected: one line for the selected model.
-
-Smoke-test Token Factory directly:
-
-```bash
-HTTP_CODE=$(curl -sS -o /tmp/tokenfactory-direct.json -w '%{http_code}' \
-  -H "Authorization: Bearer $NEBIUS_API_KEY" \
-  -H "Content-Type: application/json" \
-  --data-binary "{
-    \"model\": \"$NEBIUS_TF_MODEL\",
-    \"messages\": [
-      {\"role\": \"user\", \"content\": \"Reply exactly: token-factory-ready\"}
-    ],
-    \"max_tokens\": 512,
-    \"temperature\": 0
-  }" \
-  "https://api.tokenfactory.nebius.com/v1/chat/completions")
-
-printf 'http=%s\n' "$HTTP_CODE"
-jq -r '.choices[0].message.content' /tmp/tokenfactory-direct.json
-```
-
-Expected:
-
-```text
-token-factory-ready
-```
-
-If the content is `null`, inspect the saved response before assuming the
-provider is broken. Some reasoning models can spend the output budget on hidden
-reasoning:
-
-```bash
-jq '{finish_reason: .choices[0].finish_reason, content: .choices[0].message.content, reasoning: .choices[0].message.reasoning}' \
-  /tmp/tokenfactory-direct.json 2>/dev/null || true
-```
-
-## 5. Back Up Existing Hermes State
-
-Create a lightweight backup before installing or re-onboarding:
+## 3. Back Up Hermes Config
 
 ```bash
 TS="$(date +%Y%m%d-%H%M%S)"
 BACKUP_DIR="$HOME/.config/hermes-nebius/backups/$TS"
 install -d -m 700 "$BACKUP_DIR"
 
-[ -d "$HOME/.hermes" ] && tar -C "$HOME" -czf "$BACKUP_DIR/hermes-home.tgz" .hermes
-[ -d "$HOME/.config/nemoclaw" ] && tar -C "$HOME" -czf "$BACKUP_DIR/nemoclaw-config.tgz" .config/nemoclaw
-[ -d "$HOME/.openshell" ] && tar -C "$HOME" -czf "$BACKUP_DIR/openshell-home.tgz" .openshell
+[ -f "$HOME/.hermes/config.yaml" ] && cp "$HOME/.hermes/config.yaml" "$BACKUP_DIR/config.yaml"
+[ -f "$HOME/.hermes/.env" ] && cp "$HOME/.hermes/.env" "$BACKUP_DIR/env"
 
 printf 'backup_dir=%s\n' "$BACKUP_DIR"
 ```
 
-This backup does not include Docker images or volumes. It is enough to preserve
-user-level config before trying the Token Factory path.
-
-## 6. Install Or Re-Onboard NemoClaw Hermes
-
-Use a separate sandbox name so the Token Factory experiment does not overwrite a
-different Hermes environment:
+Rollback is just:
 
 ```bash
-export HERMES_SANDBOX="${HERMES_SANDBOX:-fde-hermes-nebius}"
-export NEBIUS_TF_MODEL="${NEBIUS_TF_MODEL:-nvidia/NVIDIA-Nemotron-3-Nano-30B-A3B}"
-export PATH="$HOME/.local/bin:$PATH"
+cp "$BACKUP_DIR/config.yaml" "$HOME/.hermes/config.yaml"
+cp "$BACKUP_DIR/env" "$HOME/.hermes/.env"
 ```
 
-If `nemohermes` is already installed, check whether this sandbox exists:
+## 4. Add The Secret To Hermes
 
-```bash
-if command -v nemohermes >/dev/null 2>&1; then
-  nemohermes "$HERMES_SANDBOX" status || true
-fi
-```
-
-If the sandbox does not exist, or you intentionally want to recreate this
-Token Factory Hermes sandbox, download the installer first, then run it with
-the OpenAI-compatible provider settings. This keeps credentials out of the
-download step.
+Hermes supports secrets in `~/.hermes/.env`. Add the Nebius key there so the
+YAML config can reference `NEBIUS_API_KEY` without storing the secret in YAML.
 
 ```bash
 set +x
-TOKEN="${NEBIUS_API_KEY:-}"
-INSTALLER="$(mktemp)"
+install -d -m 700 "$HOME/.hermes"
+touch "$HOME/.hermes/.env"
+chmod 600 "$HOME/.hermes/.env"
 
-if [ -z "$TOKEN" ]; then
-  echo "FAIL: NEBIUS_API_KEY is not loaded"
-  rm -f "$INSTALLER"
-  return 1 2>/dev/null || exit 1
+if grep -q '^NEBIUS_API_KEY=' "$HOME/.hermes/.env"; then
+  echo "OK: ~/.hermes/.env already has NEBIUS_API_KEY"
+else
+  if [ -z "${NEBIUS_API_KEY:-}" ]; then
+    echo "FAIL: NEBIUS_API_KEY is not loaded"
+    return 1 2>/dev/null || exit 1
+  fi
+  printf '\nNEBIUS_API_KEY=%s\n' "$NEBIUS_API_KEY" >> "$HOME/.hermes/.env"
+  echo "OK: added NEBIUS_API_KEY to ~/.hermes/.env"
 fi
-
-curl -fsSL https://www.nvidia.com/nemoclaw.sh -o "$INSTALLER"
-chmod 700 "$INSTALLER"
-
-env \
-  NEMOCLAW_AGENT=hermes \
-  NEMOCLAW_NON_INTERACTIVE=1 \
-  NEMOCLAW_ACCEPT_THIRD_PARTY_SOFTWARE=1 \
-  NEMOCLAW_REASONING=true \
-  NEMOCLAW_PROVIDER=custom \
-  NEMOCLAW_ENDPOINT_URL=https://api.tokenfactory.nebius.com/v1/ \
-  NEMOCLAW_MODEL="$NEBIUS_TF_MODEL" \
-  NEMOCLAW_SANDBOX_NAME="$HERMES_SANDBOX" \
-  NEMOCLAW_WEB_SEARCH_PROVIDER=none \
-  COMPATIBLE_API_KEY="$TOKEN" \
-  NEMOCLAW_YES=1 \
-  bash "$INSTALLER"
-
-unset TOKEN
-rm -f "$INSTALLER"
-export PATH="$HOME/.local/bin:$PATH"
 ```
 
-Why these settings:
+## 5. Add Nebius As A Hermes Provider
 
-- `NEMOCLAW_AGENT=hermes` selects Hermes Agent.
-- `NEMOCLAW_PROVIDER=custom` selects the OpenAI-compatible provider path.
-- `NEMOCLAW_ENDPOINT_URL` points at the Token Factory API.
-- `COMPATIBLE_API_KEY` is the credential variable NemoClaw expects for custom
-  OpenAI-compatible providers.
-- `NEMOCLAW_WEB_SEARCH_PROVIDER=none` keeps this setup focused on model access.
-- `NEMOCLAW_SANDBOX_NAME` isolates this experiment from any existing Hermes
-  process.
-
-## 7. Verify Hermes Gateway Health
-
-Check CLI availability:
+Open the Hermes config:
 
 ```bash
-export PATH="$HOME/.local/bin:$PATH"
-
-nemohermes --version
-nemoclaw --version
+hermes config edit
 ```
 
-Check sandbox status:
+Merge this block into `~/.hermes/config.yaml`. Keep existing unrelated settings.
+If `custom_providers` or `model_aliases` already exist, add these entries under
+the existing top-level keys instead of duplicating the keys.
+
+```yaml
+custom_providers:
+  - name: nebius-token-factory
+    base_url: https://api.tokenfactory.nebius.com/v1/
+    key_env: NEBIUS_API_KEY
+    api_mode: chat_completions
+    models:
+      Qwen/Qwen3-235B-A22B-Instruct-2507:
+        context_length: 262144
+      nvidia/Nemotron-3-Nano-Omni:
+        context_length: 262144
+      deepseek-ai/DeepSeek-V4-Pro:
+        context_length: 1048576
+
+model:
+  provider: custom:nebius-token-factory
+  default: Qwen/Qwen3-235B-A22B-Instruct-2507
+
+model_aliases:
+  nebius-qwen:
+    provider: custom:nebius-token-factory
+    model: Qwen/Qwen3-235B-A22B-Instruct-2507
+  nebius-cheap:
+    provider: custom:nebius-token-factory
+    model: nvidia/Nemotron-3-Nano-Omni
+  nebius-big:
+    provider: custom:nebius-token-factory
+    model: deepseek-ai/DeepSeek-V4-Pro
+```
+
+Why this shape:
+
+- `custom_providers` gives Token Factory a stable provider name inside Hermes.
+- `base_url` points at the OpenAI-compatible Token Factory endpoint.
+- `key_env` keeps the API key in `~/.hermes/.env`.
+- `model.provider` makes Nebius the default provider.
+- `model.default` sets the default model Hermes should use.
+- `model_aliases` gives you short names for switching during experiments.
+
+For a fresh or empty config file, this whole block can be the complete config.
+For an existing config, merge it carefully instead of overwriting active
+settings.
+
+## 6. Validate Hermes Config
 
 ```bash
-nemohermes "$HERMES_SANDBOX" status
+hermes config check
+hermes config get model
 ```
 
-Expected markers:
+Expected model output should include:
 
 ```text
-Phase: Ready
-Harness: Hermes Agent
-Hermes Agent: running
+provider: custom:nebius-token-factory
+default: Qwen/Qwen3-235B-A22B-Instruct-2507
 ```
 
-Check local endpoints:
+If Hermes reports a YAML parse error, restore the backup and re-merge the block.
+
+## 7. Smoke Test Token Factory Directly
+
+This uses the same key but bypasses Hermes, so failures are easier to isolate.
+It spends a tiny Token Factory request.
 
 ```bash
-curl -sS -o /tmp/nemoclaw-dashboard-check.txt -w '%{http_code}\n' \
-  http://127.0.0.1:18789/
-
-curl -sS -o /tmp/nemoclaw-api-health.txt -w '%{http_code}\n' \
-  http://127.0.0.1:8642/health
-```
-
-Expected:
-
-```text
-200
-200
-```
-
-Check the Hermes OpenAI-compatible gateway:
-
-```bash
-HERMES_TOKEN="$(nemohermes "$HERMES_SANDBOX" gateway-token --quiet)"
-
-HTTP_CODE=$(curl -sS -o /tmp/nemoclaw-hermes-chat.json -w '%{http_code}' \
-  -H "Authorization: Bearer $HERMES_TOKEN" \
+HTTP_CODE=$(curl -sS -o /tmp/nebius-token-factory-smoke.json -w '%{http_code}' \
+  -H "Authorization: Bearer $NEBIUS_API_KEY" \
   -H "Content-Type: application/json" \
-  --data-binary "{
-    \"model\": \"$NEBIUS_TF_MODEL\",
-    \"messages\": [
-      {\"role\": \"user\", \"content\": \"Reply exactly: hermes-ready\"}
+  --data-binary '{
+    "model": "Qwen/Qwen3-235B-A22B-Instruct-2507",
+    "messages": [
+      {"role": "user", "content": "Reply exactly: token-factory-ok"}
     ],
-    \"max_tokens\": 512,
-    \"temperature\": 0
-  }" \
-  http://127.0.0.1:8642/v1/chat/completions)
-
-unset HERMES_TOKEN
+    "max_tokens": 64,
+    "temperature": 0
+  }' \
+  "https://api.tokenfactory.nebius.com/v1/chat/completions")
 
 printf 'http=%s\n' "$HTTP_CODE"
-jq -r '.choices[0].message.content' /tmp/nemoclaw-hermes-chat.json
+jq -r '.choices[0].message.content // empty' /tmp/nebius-token-factory-smoke.json
 ```
 
 Expected:
 
 ```text
 http=200
-hermes-ready
+token-factory-ok
 ```
 
-This proves the gateway path works:
+If `jq` is not installed, either install it or inspect the JSON file manually:
+
+```bash
+python3 -m json.tool /tmp/nebius-token-factory-smoke.json | sed -n '1,120p'
+```
+
+## 8. Smoke Test Hermes
+
+```bash
+hermes chat -Q -q "Reply exactly: hermes-nebius-ok"
+```
+
+Expected:
 
 ```text
-Hermes gateway -> Nebius Token Factory -> selected model -> response
+hermes-nebius-ok
 ```
 
-## 8. Tool-Calling Gate
-
-Run this before letting Hermes inspect files, edit repos, or act as a coding
-agent. The test must prove Hermes used a tool, not just that the model guessed
-an answer.
-
-Create a ground-truth file inside the sandbox:
+If the direct Token Factory test works but Hermes fails, check:
 
 ```bash
-nemohermes "$HERMES_SANDBOX" exec -- \
-  sh -lc 'printf "real-%s\n" "$(date +%s)" > /tmp/hermes-ground-truth.txt && cat /tmp/hermes-ground-truth.txt'
+hermes config get model
+hermes config get custom_providers
+grep '^NEBIUS_API_KEY=' "$HOME/.hermes/.env" >/dev/null && echo "Hermes key entry exists"
 ```
 
-Ask Hermes to read it through its terminal tool:
+Do not print the key while debugging.
+
+## 9. Switch Models
+
+After the default works, test aliases one at a time:
 
 ```bash
-nemohermes "$HERMES_SANDBOX" exec --workdir /sandbox -- \
-  hermes chat \
-    --yolo \
-    -t terminal,file \
-    -Q \
-    -q "Use the terminal tool to run: cat /tmp/hermes-ground-truth.txt. Return only the observed command output."
+hermes chat -Q -m nebius-cheap -q "Reply exactly: cheap-ok"
+hermes chat -Q -m nebius-big -q "Reply exactly: big-ok"
 ```
 
-Expected result:
+If aliases do not resolve in your Hermes version, use the full provider-qualified
+model name inside chat:
 
 ```text
-real-<timestamp>
+/model custom:nebius-token-factory:nvidia/Nemotron-3-Nano-Omni
 ```
 
-Verify the session actually used a tool:
+Keep Qwen as the default until a replacement passes real coding-agent tasks.
+
+## 10. Restart Only If Needed
+
+If a long-running Hermes process does not pick up config changes, restart the
+existing process using the same mechanism that already manages it on the VPS.
+First identify how it is running:
 
 ```bash
-nemohermes "$HERMES_SANDBOX" exec -- \
-  hermes logs --since 2m | grep -E 'tool_turns|conversation turn' | tail -n 12
+ps aux | grep -Ei 'hermes' | grep -v grep || true
+systemctl --user status hermes 2>/dev/null || true
 ```
 
-Pass marker:
-
-```text
-tool_turns=1
-```
-
-Fail marker:
-
-```text
-tool_turns=0
-```
-
-If you get `tool_turns=0`, do not use Hermes for file-inspection or editing
-tasks yet. Use shell commands as the source of truth and treat Hermes as a chat
-or summarization endpoint only.
-
-## 9. Try Alternate Models Safely
-
-After the Nemotron baseline works, you can recreate a separate sandbox with a
-different model. Do not replace the working sandbox until the new one passes
-both the gateway smoke test and the tool-calling gate.
-
-Example with Qwen:
-
-```bash
-export HERMES_SANDBOX=fde-hermes-nebius-qwen
-export NEBIUS_TF_MODEL=Qwen/Qwen3-235B-A22B-Instruct-2507
-
-# Repeat Steps 4, 6, 7, and 8.
-```
-
-Example with a Hermes-family model:
-
-```bash
-export HERMES_SANDBOX=fde-hermes-nebius-hermes4
-export NEBIUS_TF_MODEL=NousResearch/Hermes-4-70B
-
-# Repeat Steps 4, 6, 7, and 8.
-```
-
-Keep notes for each sandbox:
-
-```text
-sandbox=
-model=
-direct_token_factory_smoke=
-hermes_gateway_smoke=
-tool_calling_gate=
-notes=
-```
-
-## 10. Connect From Your Laptop
-
-For the dashboard and local API, keep an SSH tunnel open from your laptop:
-
-```bash
-ssh -L 18789:127.0.0.1:18789 -L 8642:127.0.0.1:8642 <user>@<vps-host>
-```
-
-Then open:
-
-```text
-http://127.0.0.1:18789/
-```
-
-Treat any dashboard auth URL, one-time helper URL, or gateway token as a secret.
-
-Terminal chat from the VPS:
-
-```bash
-export PATH="$HOME/.local/bin:$PATH"
-nemohermes "$HERMES_SANDBOX" connect
-```
+Use the existing service manager or shell session. Avoid changing unrelated
+startup files while validating the provider config.
 
 ## Troubleshooting
 
-### `COMPATIBLE_API_KEY` vs `NEBIUS_API_KEY`
+### `Unknown provider`
 
-Nebius docs use `NEBIUS_API_KEY`. NemoClaw's custom OpenAI-compatible provider
-expects that same key to be passed as `COMPATIBLE_API_KEY` during onboarding.
+Check that `provider` is exactly:
 
-Keep `NEBIUS_API_KEY` as your normal shell variable, then map it only at install
-time:
-
-```bash
-COMPATIBLE_API_KEY="$NEBIUS_API_KEY"
+```yaml
+provider: custom:nebius-token-factory
 ```
 
-### `nemohermes` is not found after install
+and that the matching provider entry is named:
 
-Refresh `PATH`:
-
-```bash
-export PATH="$HOME/.local/bin:$PATH"
-hash -r
-command -v nemohermes
+```yaml
+name: nebius-token-factory
 ```
 
-If that works, add the PATH line to the shell profile used on the VPS.
+### `401` Or `Unauthorized`
 
-### Token Factory returns `401`
-
-The key is missing, invalid, or not loaded:
+The key is missing, expired, or not loaded by Hermes:
 
 ```bash
-source "$HOME/.config/pi-nebius/env"
-test -n "$NEBIUS_API_KEY" && echo "key loaded"
+grep '^NEBIUS_API_KEY=' "$HOME/.hermes/.env" >/dev/null && echo "key entry exists"
+chmod 600 "$HOME/.hermes/.env"
 ```
 
-If the key is loaded and `401` continues, create a new key in the Token Factory
-console.
+If the entry exists and direct `curl` still returns `401`, create a new Token
+Factory key and replace the value in `~/.hermes/.env`.
 
-### Hermes gateway returns `200` but tools do not run
+### YAML Parse Error
 
-This is the important failure mode. The dashboard and `/v1/chat/completions`
-can work while Hermes still chooses plain text instead of tool calls.
-
-Try a separate sandbox with another tool-capable model, such as:
+Restore the backup, then re-merge:
 
 ```bash
-Qwen/Qwen3-235B-A22B-Instruct-2507
-NousResearch/Hermes-4-70B
-nvidia/Nemotron-3-Nano-Omni
+cp "$BACKUP_DIR/config.yaml" "$HOME/.hermes/config.yaml"
+hermes config edit
 ```
 
-Only promote a model after Step 8 logs `tool_turns=1`.
+Common causes are duplicate top-level keys, tabs, and incorrect indentation.
 
-### Existing direct Hermes process is already running
+### Model Exists In Catalog But Hermes Still Fails
 
-If the VPS has a direct Hermes process under `~/.hermes`, leave it running while
-you test the NemoClaw sandbox unless ports conflict.
-
-If ports `18789` or `8642` are already in use, inspect the owner:
-
-```bash
-ss -ltnp | grep -E ':18789|:8642' || true
-```
-
-Do not kill the process until you know whether it is the currently used Hermes
-gateway. Prefer a separate sandbox name first.
+Use the direct curl smoke test first. If curl works, the problem is Hermes
+config shape, not Token Factory access. Re-check `custom_providers`, `key_env`,
+and `model.provider`.
 
 ## References
 
-- NemoClaw prerequisites:
-  https://docs.nvidia.com/nemoclaw/user-guide/hermes/get-started/prerequisites.md
-- NemoClaw Hermes quickstart:
-  https://docs.nvidia.com/nemoclaw/user-guide/hermes/get-started/quickstart.md
+- Hermes configuration:
+  https://hermes-agent.nousresearch.com/docs/user-guide/configuration
+- Hermes custom providers:
+  https://hermes-agent.nousresearch.com/docs/integrations/providers
+- Hermes source:
+  https://github.com/NousResearch/hermes-agent
 - Nebius Token Factory quickstart:
   https://docs.tokenfactory.nebius.com/quickstart
-- Token Factory model list API:
-  https://docs.tokenfactory.nebius.com/api-reference/models/list-models.md
 - Related Pi setup:
   [Pi Coding Agent on a Nebius Token Factory VPS](pi-coding-agent-nebius-vps.md)
