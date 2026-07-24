@@ -2,7 +2,7 @@
 project: tooling-and-research
 schema_version: "1.0"
 created: Fri Jul 24 2026 02:23:40 GMT-0600 (Central Standard Time)
-updated: 2026-07-24T11:05:03.994Z
+updated: 2026-07-24T11:05:04.139Z
 default_workflow: [backlog, todo, in_progress, review, done]
 id_prefix: TASK
 next_id: 9
@@ -12,7 +12,7 @@ next_id: 9
 
 | Agent | Type | Role | Status | Working On | Last Active | Trust Level |
 |-------|------|------|--------|------------|-------------|-------------|
-| @codex | bot | engineer | working | TASK-008 | 2026-07-24T11:05:03.994Z | trusted |
+| @codex | bot | engineer | idle | - | 2026-07-24T11:05:04.139Z | trusted |
 
 ---
 
@@ -311,13 +311,13 @@ history:
 
 ```yaml
 id: TASK-008
-status: in_progress
+status: done
 priority: high
 assigned_to: null
-claimed_by: "@codex"
+claimed_by: null
 created_by: "@troopdegen"
 created_at: 2026-07-24T11:04:24.084Z
-updated_at: 2026-07-24T11:05:03.994Z
+updated_at: 2026-07-24T11:05:04.139Z
 tags:
   - hermes
   - telegram
@@ -339,4 +339,9 @@ history:
       DM ImportError where Hermes code imports _is_hermes_internal_secret but
       the local.py file is stale. Updated the runbook troubleshooting section
       with the repair and gateway restart commands.
+  - ts: 2026-07-24T11:05:04.139Z
+    who: "@codex"
+    action: completed
+    from: in_progress
+    to: done
 ```
