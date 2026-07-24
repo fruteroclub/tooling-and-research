@@ -2,7 +2,7 @@
 project: tooling-and-research
 schema_version: "1.0"
 created: Fri Jul 24 2026 02:23:40 GMT-0600 (Central Standard Time)
-updated: 2026-07-24T10:57:34.113Z
+updated: 2026-07-24T10:57:34.279Z
 default_workflow: [backlog, todo, in_progress, review, done]
 id_prefix: TASK
 next_id: 7
@@ -12,7 +12,7 @@ next_id: 7
 
 | Agent | Type | Role | Status | Working On | Last Active | Trust Level |
 |-------|------|------|--------|------------|-------------|-------------|
-| @codex | bot | engineer | working | TASK-006 | 2026-07-24T10:57:34.113Z | trusted |
+| @codex | bot | engineer | idle | - | 2026-07-24T10:57:34.279Z | trusted |
 
 ---
 
@@ -232,13 +232,13 @@ history:
 
 ```yaml
 id: TASK-006
-status: in_progress
+status: done
 priority: high
 assigned_to: null
-claimed_by: "@codex"
+claimed_by: null
 created_by: "@troopdegen"
 created_at: 2026-07-24T10:57:09.272Z
-updated_at: 2026-07-24T10:57:34.113Z
+updated_at: 2026-07-24T10:57:34.279Z
 tags:
   - pi-coding-agent-daily-driver
   - nebius-token-factory
@@ -260,4 +260,9 @@ history:
       patched the Pi runbook to prefer the script over pasted heredocs, and
       omitted optional cost fields from the baseline config to avoid schema
       drift in Pi v0.82.0.
+  - ts: 2026-07-24T10:57:34.279Z
+    who: "@codex"
+    action: completed
+    from: in_progress
+    to: done
 ```
