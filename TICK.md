@@ -2,10 +2,10 @@
 project: tooling-and-research
 schema_version: "1.0"
 created: Fri Jul 24 2026 02:23:40 GMT-0600 (Central Standard Time)
-updated: 2026-07-24T09:54:23.566Z
+updated: 2026-07-24T10:12:13.396Z
 default_workflow: [backlog, todo, in_progress, review, done]
 id_prefix: TASK
-next_id: 4
+next_id: 5
 ---
 
 ## Agents
@@ -143,3 +143,28 @@ history:
 ```
 
 > Remove the duplicate Qwen baseline model from the Pi VPS runbook and add a compact model comparison table for default and suggested Token Factory models.
+
+### TASK-004 · Create Hermes Nebius Token Factory runbook
+
+```yaml
+id: TASK-004
+status: backlog
+priority: medium
+assigned_to: null
+claimed_by: null
+created_by: "@troopdegen"
+created_at: 2026-07-24T10:12:13.396Z
+updated_at: 2026-07-24T10:12:13.396Z
+tags:
+  - hermes
+  - nemoclaw
+  - nebius-token-factory
+  - docs
+  - vps
+history:
+  - ts: 2026-07-24T10:12:13.396Z
+    who: "@troopdegen"
+    action: created
+```
+
+> Document a safe VPS runbook for configuring Hermes/NemoClaw with Nebius Token Factory, including secret handling, existing-install safeguards, gateway validation, and the Hermes tool-calling gate.
