@@ -2,7 +2,7 @@
 project: tooling-and-research
 schema_version: "1.0"
 created: Fri Jul 24 2026 02:23:40 GMT-0600 (Central Standard Time)
-updated: 2026-07-24T11:01:33.751Z
+updated: 2026-07-24T11:01:33.915Z
 default_workflow: [backlog, todo, in_progress, review, done]
 id_prefix: TASK
 next_id: 8
@@ -12,7 +12,7 @@ next_id: 8
 
 | Agent | Type | Role | Status | Working On | Last Active | Trust Level |
 |-------|------|------|--------|------------|-------------|-------------|
-| @codex | bot | engineer | working | TASK-007 | 2026-07-24T11:01:33.751Z | trusted |
+| @codex | bot | engineer | idle | - | 2026-07-24T11:01:33.915Z | trusted |
 
 ---
 
@@ -271,13 +271,13 @@ history:
 
 ```yaml
 id: TASK-007
-status: in_progress
+status: done
 priority: high
 assigned_to: null
-claimed_by: "@codex"
+claimed_by: null
 created_by: "@troopdegen"
 created_at: 2026-07-24T10:59:40.802Z
-updated_at: 2026-07-24T11:01:33.751Z
+updated_at: 2026-07-24T11:01:33.915Z
 tags:
   - hermes
   - nebius-token-factory
@@ -300,4 +300,9 @@ history:
       the Pi env only as a key source, writes only Hermes files, idempotently
       merges custom:nebius-token-factory plus aliases, and updates the runbook
       to prefer the script.
+  - ts: 2026-07-24T11:01:33.915Z
+    who: "@codex"
+    action: completed
+    from: in_progress
+    to: done
 ```
