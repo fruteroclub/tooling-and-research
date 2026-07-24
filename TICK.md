@@ -2,7 +2,7 @@
 project: tooling-and-research
 schema_version: "1.0"
 created: Fri Jul 24 2026 02:23:40 GMT-0600 (Central Standard Time)
-updated: 2026-07-24T11:04:24.242Z
+updated: 2026-07-24T11:05:03.994Z
 default_workflow: [backlog, todo, in_progress, review, done]
 id_prefix: TASK
 next_id: 9
@@ -12,7 +12,7 @@ next_id: 9
 
 | Agent | Type | Role | Status | Working On | Last Active | Trust Level |
 |-------|------|------|--------|------------|-------------|-------------|
-| @codex | bot | engineer | working | TASK-008 | 2026-07-24T11:04:24.242Z | trusted |
+| @codex | bot | engineer | working | TASK-008 | 2026-07-24T11:05:03.994Z | trusted |
 
 ---
 
@@ -317,7 +317,7 @@ assigned_to: null
 claimed_by: "@codex"
 created_by: "@troopdegen"
 created_at: 2026-07-24T11:04:24.084Z
-updated_at: 2026-07-24T11:04:24.242Z
+updated_at: 2026-07-24T11:05:03.994Z
 tags:
   - hermes
   - telegram
@@ -332,4 +332,11 @@ history:
     action: claimed
     from: backlog
     to: in_progress
+  - ts: 2026-07-24T11:05:03.994Z
+    who: "@codex"
+    action: commented
+    note: Added code/scripts/repair-hermes-runtime-version-skew.sh for the Telegram
+      DM ImportError where Hermes code imports _is_hermes_internal_secret but
+      the local.py file is stale. Updated the runbook troubleshooting section
+      with the repair and gateway restart commands.
 ```
