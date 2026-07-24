@@ -2,10 +2,10 @@
 project: tooling-and-research
 schema_version: "1.0"
 created: Fri Jul 24 2026 02:23:40 GMT-0600 (Central Standard Time)
-updated: 2026-07-24T09:35:57.815Z
+updated: 2026-07-24T09:41:18.816Z
 default_workflow: [backlog, todo, in_progress, review, done]
 id_prefix: TASK
-next_id: 2
+next_id: 3
 ---
 
 ## Agents
@@ -64,3 +64,26 @@ history:
 ```
 
 > Create and maintain the daily-driver Pi Coding Agent setup for a Nebius-backed VPS, including Token Factory model selection, config files, validation commands, and handoff docs.
+
+### TASK-002 · Add multi-model expansion prompt to Pi VPS runbook
+
+```yaml
+id: TASK-002
+status: backlog
+priority: medium
+assigned_to: null
+claimed_by: null
+created_by: "@troopdegen"
+created_at: 2026-07-24T09:41:18.816Z
+updated_at: 2026-07-24T09:41:18.816Z
+tags:
+  - pi-coding-agent-daily-driver
+  - docs
+  - models
+history:
+  - ts: 2026-07-24T09:41:18.816Z
+    who: "@troopdegen"
+    action: created
+```
+
+> Document a safe prompt for asking Pi Coding Agent to expand the Nebius Token Factory model list without breaking the live default config.
