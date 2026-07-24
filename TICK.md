@@ -2,7 +2,7 @@
 project: tooling-and-research
 schema_version: "1.0"
 created: Fri Jul 24 2026 02:23:40 GMT-0600 (Central Standard Time)
-updated: 2026-07-24T08:31:42.396Z
+updated: 2026-07-24T09:35:57.815Z
 default_workflow: [backlog, todo, in_progress, review, done]
 id_prefix: TASK
 next_id: 2
@@ -12,7 +12,7 @@ next_id: 2
 
 | Agent | Type | Role | Status | Working On | Last Active | Trust Level |
 |-------|------|------|--------|------------|-------------|-------------|
-| @codex | bot | engineer | idle | - | 2026-07-24T08:31:42.396Z | trusted |
+| @codex | bot | engineer | idle | - | 2026-07-24T09:35:57.815Z | trusted |
 
 ---
 
@@ -22,13 +22,13 @@ next_id: 2
 
 ```yaml
 id: TASK-001
-status: todo
+status: done
 priority: high
 assigned_to: null
 claimed_by: null
 created_by: "@troopdegen"
 created_at: 2026-07-24T08:24:25.455Z
-updated_at: 2026-07-24T08:31:42.396Z
+updated_at: 2026-07-24T09:35:57.815Z
 tags:
   - pi-coding-agent-daily-driver
   - pi
@@ -56,6 +56,11 @@ history:
     action: released
     from: in_progress
     to: todo
+  - ts: 2026-07-24T09:35:57.815Z
+    who: "@codex"
+    action: completed
+    from: todo
+    to: done
 ```
 
 > Create and maintain the daily-driver Pi Coding Agent setup for a Nebius-backed VPS, including Token Factory model selection, config files, validation commands, and handoff docs.
