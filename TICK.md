@@ -2,7 +2,7 @@
 project: tooling-and-research
 schema_version: "1.0"
 created: Fri Jul 24 2026 02:23:40 GMT-0600 (Central Standard Time)
-updated: 2026-07-24T09:53:32.531Z
+updated: 2026-07-24T09:54:23.417Z
 default_workflow: [backlog, todo, in_progress, review, done]
 id_prefix: TASK
 next_id: 4
@@ -12,7 +12,7 @@ next_id: 4
 
 | Agent | Type | Role | Status | Working On | Last Active | Trust Level |
 |-------|------|------|--------|------------|-------------|-------------|
-| @codex | bot | engineer | working | TASK-003 | 2026-07-24T09:53:32.531Z | trusted |
+| @codex | bot | engineer | working | TASK-003 | 2026-07-24T09:54:23.417Z | trusted |
 
 ---
 
@@ -114,7 +114,7 @@ assigned_to: null
 claimed_by: "@codex"
 created_by: "@troopdegen"
 created_at: 2026-07-24T09:53:32.381Z
-updated_at: 2026-07-24T09:53:32.531Z
+updated_at: 2026-07-24T09:54:23.417Z
 tags:
   - pi-coding-agent-daily-driver
   - docs
@@ -128,6 +128,13 @@ history:
     action: claimed
     from: backlog
     to: in_progress
+  - ts: 2026-07-24T09:54:23.417Z
+    who: "@codex"
+    action: commented
+    note: Corrected the baseline model stack to Qwen default, Nemotron cheap
+      fallback, and DeepSeek escalation; added an 8-column model comparison
+      table and updated the expansion prompt to avoid re-adding the installed
+      fallback.
 ```
 
 > Remove the duplicate Qwen baseline model from the Pi VPS runbook and add a compact model comparison table for default and suggested Token Factory models.
