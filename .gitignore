@@ -26,3 +26,4 @@ yarn-error.log*
 
 # Local tick runtime state
 .tick/session.json
+.gstack/

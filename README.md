@@ -6,6 +6,7 @@ agent runtimes, VPS builder environments, and model/provider configuration.
 ## Start Here
 
 - [Pi Coding Agent on a Nebius Token Factory VPS](docs/runbooks/pi-coding-agent-nebius-vps.md)
+- [Hermes with Nebius Token Factory on a VPS](docs/runbooks/hermes-nebius-token-factory-vps.md)
 
 ## Project Shape
 

@@ -39,13 +39,12 @@ excludes:
 
 ## Current state
 
-status: scaffolded - first workstream migrated.
-current_phase: Pi Coding Agent daily-driver setup and VPS model/provider
-selection.
-next_milestone: validate the Pi daily-driver configuration on the target VPS and
-capture reusable Token Factory setup notes for agent-human conversation.
-blockers: target VPS validation and final Nebius Token Factory key handling are
-still pending.
+status: active - Pi setup validated; Hermes runbook drafted.
+current_phase: reusable Nebius Token Factory agent setup for Pi and
+Hermes/NemoClaw.
+next_milestone: validate the Hermes/NemoClaw runbook on the target VPS and
+record whether the Hermes tool-calling gate passes.
+blockers: Hermes VPS-side validation is still pending.
 
 ## Operational links
 
