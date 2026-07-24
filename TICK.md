@@ -2,10 +2,10 @@
 project: tooling-and-research
 schema_version: "1.0"
 created: Fri Jul 24 2026 02:23:40 GMT-0600 (Central Standard Time)
-updated: 2026-07-24T10:57:34.279Z
+updated: 2026-07-24T10:59:40.802Z
 default_workflow: [backlog, todo, in_progress, review, done]
 id_prefix: TASK
-next_id: 7
+next_id: 8
 ---
 
 ## Agents
@@ -265,4 +265,26 @@ history:
     action: completed
     from: in_progress
     to: done
+```
+
+### TASK-007 · Add Hermes Nebius provider config script
+
+```yaml
+id: TASK-007
+status: backlog
+priority: high
+assigned_to: null
+claimed_by: null
+created_by: "@troopdegen"
+created_at: 2026-07-24T10:59:40.802Z
+updated_at: 2026-07-24T10:59:40.802Z
+tags:
+  - hermes
+  - nebius-token-factory
+  - docs
+  - fix
+history:
+  - ts: 2026-07-24T10:59:40.802Z
+    who: "@troopdegen"
+    action: created
 ```
