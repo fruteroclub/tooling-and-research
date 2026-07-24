@@ -2,8 +2,8 @@
 
 updated: 2026-07-24
 
-phase: public-safe VPS runbook published
-current: published `fruteroclub/tooling-and-research` with `docs/runbooks/pi-coding-agent-nebius-vps.md`.
-next: validate the runbook on the target VPS with its Nebius Token Factory key and adjust any setup commands that drift.
+phase: VPS setup validated end-to-end
+current: Mel completed the guide on the VPS; Pi launches with the configured Nebius Token Factory models.
+next: use the setup as the daily driver and capture any follow-up tuning for model defaults, Hermes coexistence, or agent-human conversation research.
 owner: Mel
-blockers: live validation still needs to run on the target VPS with its Nebius Token Factory key loaded.
+blockers: none for the Pi daily-driver setup.

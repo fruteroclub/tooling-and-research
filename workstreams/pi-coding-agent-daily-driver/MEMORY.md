@@ -33,3 +33,5 @@
 - 2026-07-24: Published the child project as
   `https://github.com/fruteroclub/tooling-and-research`; removed
   `.tick/session.json` from tracking and ignored it as local tick runtime state.
+- 2026-07-24: Mel completed the published VPS guide end-to-end. Pi launches on
+  the VPS with the configured Nebius Token Factory models.
