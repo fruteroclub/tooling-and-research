@@ -35,3 +35,6 @@
   `.tick/session.json` from tracking and ignored it as local tick runtime state.
 - 2026-07-24: Mel completed the published VPS guide end-to-end. Pi launches on
   the VPS with the configured Nebius Token Factory models.
+- 2026-07-24: Added a public runbook section, "Add More Models Safely", with a
+  prompt for Pi to back up configs, fetch the live Token Factory catalog, add a
+  diverse model menu, validate JSON, preserve defaults, and smoke test changes.

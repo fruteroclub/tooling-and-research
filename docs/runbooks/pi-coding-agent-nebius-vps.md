@@ -284,6 +284,121 @@ Qwen/Qwen3-235B-A22B-Instruct-2507
 Inside Pi, use `/model` if you need to switch to the cheaper fallback or the
 DeepSeek escalation model.
 
+## 10. Add More Models Safely
+
+After the baseline setup works, you can ask Pi to expand its own Nebius Token
+Factory model list. Treat this as a config change to a live tool: back up first,
+preserve the working default, validate JSON before replacing files, and smoke
+test at least one newly added model.
+
+Good content-oriented models to consider:
+
+| Role | Model | Why |
+| --- | --- | --- |
+| Cheap Nebius/NVIDIA option | `nvidia/Nemotron-3-Nano-Omni` | Very low cost, large context, strong Nebius-native story. |
+| Open agentic model | `openai/gpt-oss-120b` | Useful contrast against closed coding models; tools/json/structured outputs. |
+| Hermes ecosystem model | `NousResearch/Hermes-4-70B` | Fits Hermes/NemoClaw content and agent-runtime experiments. |
+| Code specialist | `moonshotai/Kimi-K2.7-Code` | Code-focused model; worth testing even though its context is smaller. |
+| Expensive escalation | `deepseek-ai/DeepSeek-V4-Pro` | Keep for hard or very large-context tasks. |
+
+Paste this prompt into Pi from the VPS directory where you want it to work:
+
+```text
+You are helping me update my Pi Coding Agent configuration on this VPS.
+
+Goal:
+Expand the Nebius Token Factory model menu without breaking the working default
+Pi setup.
+
+Current provider:
+- Provider id: nebius-token-factory
+- Config files:
+  - ~/.pi/agent/models.json
+  - ~/.pi/agent/settings.json
+- Token Factory API key is available as NEBIUS_API_KEY.
+
+Hard safety rules:
+1. Do not print, echo, log, or commit NEBIUS_API_KEY or any secret.
+2. Do not use sudo for ~/.pi/agent files.
+3. Do not run `sudo apt install pi`; that is the wrong Ubuntu package.
+4. Do not delete the existing working provider or default model.
+5. Preserve defaultProvider and defaultModel unless I explicitly ask you to
+   change them.
+6. Back up both Pi config files before editing them.
+7. Choose model ids from the live Token Factory catalog, not from memory.
+8. Keep Nebius Token Factory model entries with:
+   - "reasoning": false
+   - "compat": { "supportsReasoningEffort": false }
+   unless a smoke test proves Pi can safely send reasoning parameters.
+9. Validate JSON before replacing any live config file.
+10. After editing, run `pi --list-models nebius-token-factory` and one minimal
+    smoke test.
+
+Please add these models if they are available in the live catalog:
+- nvidia/Nemotron-3-Nano-Omni
+- openai/gpt-oss-120b
+- NousResearch/Hermes-4-70B
+- moonshotai/Kimi-K2.7-Code
+
+Keep these existing roles:
+- Qwen/Qwen3-235B-A22B-Instruct-2507 as the default daily-driver model.
+- deepseek-ai/DeepSeek-V4-Pro as the expensive escalation model.
+
+Implementation requirements:
+- First inspect the current ~/.pi/agent/models.json and
+  ~/.pi/agent/settings.json.
+- Create timestamped backups under ~/.pi/agent/backups/.
+- Fetch the live catalog with:
+  curl -fsS "https://api.tokenfactory.nebius.com/v1/models?verbose=true" \
+    -H "Authorization: Bearer $NEBIUS_API_KEY" \
+    -H "Accept: application/json"
+- For each added model, set:
+  - id from the live catalog
+  - name from the live catalog when available
+  - input: ["text"]
+  - contextWindow from context_length
+  - maxTokens: 8192
+  - cost using per-million-token pricing:
+    - input = pricing.prompt * 1000000
+    - output = pricing.completion * 1000000
+    - cacheRead = 0
+    - cacheWrite = 0
+  - reasoning: false
+  - compat.supportsReasoningEffort: false
+- Add each enabled model to settings.json as:
+  nebius-token-factory/<model-id>
+- Preserve existing enabled models.
+- Write to temporary files first, validate them with jq, then atomically move
+  them into place.
+
+Validation:
+- Run:
+  jq empty ~/.pi/agent/models.json
+  jq empty ~/.pi/agent/settings.json
+  jq -r '"defaultProvider=\(.defaultProvider)\ndefaultModel=\(.defaultModel)"' ~/.pi/agent/settings.json
+  pi --list-models nebius-token-factory | sed -n '1,120p'
+- Then smoke test one newly added model with a short prompt:
+  "Reply exactly: nebius model ok"
+
+Report back:
+- Which models were added.
+- Which requested models were unavailable, if any.
+- The default model after the change.
+- The backup file paths.
+- The validation commands and results.
+```
+
+If the model list breaks, restore the latest backups:
+
+```bash
+ls -lt "$HOME/.pi/agent/backups"
+cp "$HOME/.pi/agent/backups/<models-backup>.json" "$HOME/.pi/agent/models.json"
+cp "$HOME/.pi/agent/backups/<settings-backup>.json" "$HOME/.pi/agent/settings.json"
+jq empty "$HOME/.pi/agent/models.json"
+jq empty "$HOME/.pi/agent/settings.json"
+pi --list-models nebius-token-factory | sed -n '1,80p'
+```
+
 ## Troubleshooting
 
 ### `pi --list-models` does not show the Nebius models
