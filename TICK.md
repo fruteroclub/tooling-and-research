@@ -2,7 +2,7 @@
 project: tooling-and-research
 schema_version: "1.0"
 created: Fri Jul 24 2026 02:23:40 GMT-0600 (Central Standard Time)
-updated: 2026-07-24T10:57:09.272Z
+updated: 2026-07-24T10:57:12.159Z
 default_workflow: [backlog, todo, in_progress, review, done]
 id_prefix: TASK
 next_id: 7
@@ -12,7 +12,7 @@ next_id: 7
 
 | Agent | Type | Role | Status | Working On | Last Active | Trust Level |
 |-------|------|------|--------|------------|-------------|-------------|
-| @codex | bot | engineer | idle | - | 2026-07-24T10:35:55.348Z | trusted |
+| @codex | bot | engineer | working | TASK-006 | 2026-07-24T10:57:12.159Z | trusted |
 
 ---
 
@@ -232,13 +232,13 @@ history:
 
 ```yaml
 id: TASK-006
-status: backlog
+status: in_progress
 priority: high
 assigned_to: null
-claimed_by: null
+claimed_by: "@codex"
 created_by: "@troopdegen"
 created_at: 2026-07-24T10:57:09.272Z
-updated_at: 2026-07-24T10:57:09.272Z
+updated_at: 2026-07-24T10:57:12.159Z
 tags:
   - pi-coding-agent-daily-driver
   - nebius-token-factory
@@ -248,4 +248,9 @@ history:
   - ts: 2026-07-24T10:57:09.272Z
     who: "@troopdegen"
     action: created
+  - ts: 2026-07-24T10:57:12.159Z
+    who: "@codex"
+    action: claimed
+    from: backlog
+    to: in_progress
 ```
