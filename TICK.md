@@ -2,7 +2,7 @@
 project: tooling-and-research
 schema_version: "1.0"
 created: Fri Jul 24 2026 02:23:40 GMT-0600 (Central Standard Time)
-updated: 2026-07-24T10:57:12.159Z
+updated: 2026-07-24T10:57:34.113Z
 default_workflow: [backlog, todo, in_progress, review, done]
 id_prefix: TASK
 next_id: 7
@@ -12,7 +12,7 @@ next_id: 7
 
 | Agent | Type | Role | Status | Working On | Last Active | Trust Level |
 |-------|------|------|--------|------------|-------------|-------------|
-| @codex | bot | engineer | working | TASK-006 | 2026-07-24T10:57:12.159Z | trusted |
+| @codex | bot | engineer | working | TASK-006 | 2026-07-24T10:57:34.113Z | trusted |
 
 ---
 
@@ -238,7 +238,7 @@ assigned_to: null
 claimed_by: "@codex"
 created_by: "@troopdegen"
 created_at: 2026-07-24T10:57:09.272Z
-updated_at: 2026-07-24T10:57:12.159Z
+updated_at: 2026-07-24T10:57:34.113Z
 tags:
   - pi-coding-agent-daily-driver
   - nebius-token-factory
@@ -253,4 +253,11 @@ history:
     action: claimed
     from: backlog
     to: in_progress
+  - ts: 2026-07-24T10:57:34.113Z
+    who: "@codex"
+    action: commented
+    note: Added code/scripts/repair-pi-nebius-config.sh for one-line VPS recovery,
+      patched the Pi runbook to prefer the script over pasted heredocs, and
+      omitted optional cost fields from the baseline config to avoid schema
+      drift in Pi v0.82.0.
 ```
