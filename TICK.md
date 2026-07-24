@@ -2,7 +2,7 @@
 project: tooling-and-research
 schema_version: "1.0"
 created: Fri Jul 24 2026 02:23:40 GMT-0600 (Central Standard Time)
-updated: 2026-07-24T10:12:13.396Z
+updated: 2026-07-24T10:12:13.560Z
 default_workflow: [backlog, todo, in_progress, review, done]
 id_prefix: TASK
 next_id: 5
@@ -12,7 +12,7 @@ next_id: 5
 
 | Agent | Type | Role | Status | Working On | Last Active | Trust Level |
 |-------|------|------|--------|------------|-------------|-------------|
-| @codex | bot | engineer | idle | - | 2026-07-24T09:54:23.566Z | trusted |
+| @codex | bot | engineer | working | TASK-004 | 2026-07-24T10:12:13.560Z | trusted |
 
 ---
 
@@ -148,13 +148,13 @@ history:
 
 ```yaml
 id: TASK-004
-status: backlog
+status: in_progress
 priority: medium
 assigned_to: null
-claimed_by: null
+claimed_by: "@codex"
 created_by: "@troopdegen"
 created_at: 2026-07-24T10:12:13.396Z
-updated_at: 2026-07-24T10:12:13.396Z
+updated_at: 2026-07-24T10:12:13.560Z
 tags:
   - hermes
   - nemoclaw
@@ -165,6 +165,11 @@ history:
   - ts: 2026-07-24T10:12:13.396Z
     who: "@troopdegen"
     action: created
+  - ts: 2026-07-24T10:12:13.560Z
+    who: "@codex"
+    action: claimed
+    from: backlog
+    to: in_progress
 ```
 
 > Document a safe VPS runbook for configuring Hermes/NemoClaw with Nebius Token Factory, including secret handling, existing-install safeguards, gateway validation, and the Hermes tool-calling gate.
