@@ -30,3 +30,6 @@
   `tooling-and-research/docs/runbooks/pi-coding-agent-nebius-vps.md`. The guide
   uses Qwen3 235B as the default, Qwen3 30B as fallback, DeepSeek V4 Pro as
   escalation, and stores the Token Factory key in a private env file on the VPS.
+- 2026-07-24: Published the child project as
+  `https://github.com/fruteroclub/tooling-and-research`; removed
+  `.tick/session.json` from tracking and ignored it as local tick runtime state.

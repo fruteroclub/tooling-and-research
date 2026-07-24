@@ -2,8 +2,8 @@
 
 updated: 2026-07-24
 
-phase: public-safe VPS runbook drafted
-current: added `docs/runbooks/pi-coding-agent-nebius-vps.md` with install, secret handling, Qwen default config, fallbacks, and validation commands.
-next: publish the runbook through a Frutero Club GitHub repo/path and validate it on the target VPS with its Nebius Token Factory key.
+phase: public-safe VPS runbook published
+current: published `fruteroclub/tooling-and-research` with `docs/runbooks/pi-coding-agent-nebius-vps.md`.
+next: validate the runbook on the target VPS with its Nebius Token Factory key and adjust any setup commands that drift.
 owner: Mel
 blockers: live validation still needs to run on the target VPS with its Nebius Token Factory key loaded.

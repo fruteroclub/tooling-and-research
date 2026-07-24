@@ -11,6 +11,10 @@
   `../../../nebius/code/nebius-fde-trainer-webinar-series/01-nebius-cloud-builder-environment/written-guide.md`.
 - Public-safe setup runbook:
   `../../docs/runbooks/pi-coding-agent-nebius-vps.md`.
+- Public GitHub repository:
+  https://github.com/fruteroclub/tooling-and-research
+- Public GitHub guide:
+  https://github.com/fruteroclub/tooling-and-research/blob/main/docs/runbooks/pi-coding-agent-nebius-vps.md
 - Pi docs: https://pi.dev/docs/latest
 - Pi custom models docs: https://pi.dev/docs/latest/models
 - Nebius Token Factory docs: https://docs.tokenfactory.nebius.com/quickstart
