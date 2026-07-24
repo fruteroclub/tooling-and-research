@@ -13,3 +13,9 @@
   `NousResearch/Hermes-4-70B`, and `deepseek-ai/DeepSeek-V4-Pro`.
 - 2026-07-24: The corrected Hermes guide recommends Qwen as default, Nemotron
   Omni as a cheaper test path, and DeepSeek V4 Pro as an expensive escalation.
+- 2026-07-24: After Pi config was repaired with a repo-hosted script, Mel asked
+  for the same shape for Hermes. Added
+  `code/scripts/configure-hermes-nebius-token-factory.sh`: it backs up
+  `~/.hermes/config.yaml` and `~/.hermes/.env`, sources the Pi env only as a
+  key source, writes only Hermes files, and idempotently merges the named
+  Nebius custom provider plus aliases.

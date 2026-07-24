@@ -63,7 +63,27 @@ If Hermes is currently running, leave it running while you inspect and back up
 the config. The provider change below is file-level config; restart only if the
 running process does not pick up the change.
 
-## 2. Load The Token Factory Key
+## 2. Configure Hermes With The Script
+
+Preferred path:
+
+```bash
+curl -fsSL https://raw.githubusercontent.com/fruteroclub/tooling-and-research/main/code/scripts/configure-hermes-nebius-token-factory.sh | bash
+```
+
+The script:
+
+- backs up `~/.hermes/config.yaml` and `~/.hermes/.env`;
+- reads `NEBIUS_API_KEY` from the shell or `~/.config/pi-nebius/env`;
+- writes the key to `~/.hermes/.env` only if it is missing;
+- merges a named `custom:nebius-token-factory` provider into
+  `~/.hermes/config.yaml`;
+- preserves unrelated Hermes settings and other custom providers;
+- does not write to any Pi config files.
+
+After it finishes, run the smoke tests in Steps 8 and 9.
+
+## 3. Manual Fallback: Load The Token Factory Key
 
 If you completed the Pi Coding Agent guide, reuse its private env file:
 
@@ -84,7 +104,7 @@ echo "OK: NEBIUS_API_KEY is loaded"
 
 Do not print the key. Do not paste it into chat. Do not commit it.
 
-## 3. Back Up Hermes Config
+## 4. Manual Fallback: Back Up Hermes Config
 
 ```bash
 TS="$(date +%Y%m%d-%H%M%S)"
@@ -104,7 +124,7 @@ cp "$BACKUP_DIR/config.yaml" "$HOME/.hermes/config.yaml"
 cp "$BACKUP_DIR/env" "$HOME/.hermes/.env"
 ```
 
-## 4. Add The Secret To Hermes
+## 5. Manual Fallback: Add The Secret To Hermes
 
 Hermes supports secrets in `~/.hermes/.env`. Add the Nebius key there so the
 YAML config can reference `NEBIUS_API_KEY` without storing the secret in YAML.
@@ -127,7 +147,7 @@ else
 fi
 ```
 
-## 5. Add Nebius As A Hermes Provider
+## 6. Manual Fallback: Add Nebius As A Hermes Provider
 
 Open the Hermes config:
 
@@ -182,7 +202,7 @@ For a fresh or empty config file, this whole block can be the complete config.
 For an existing config, merge it carefully instead of overwriting active
 settings.
 
-## 6. Validate Hermes Config
+## 7. Validate Hermes Config
 
 ```bash
 hermes config check
@@ -198,7 +218,7 @@ default: Qwen/Qwen3-235B-A22B-Instruct-2507
 
 If Hermes reports a YAML parse error, restore the backup and re-merge the block.
 
-## 7. Smoke Test Token Factory Directly
+## 8. Smoke Test Token Factory Directly
 
 This uses the same key but bypasses Hermes, so failures are easier to isolate.
 It spends a tiny Token Factory request.
@@ -234,7 +254,7 @@ If `jq` is not installed, either install it or inspect the JSON file manually:
 python3 -m json.tool /tmp/nebius-token-factory-smoke.json | sed -n '1,120p'
 ```
 
-## 8. Smoke Test Hermes
+## 9. Smoke Test Hermes
 
 ```bash
 hermes chat -Q -q "Reply exactly: hermes-nebius-ok"
@@ -256,7 +276,7 @@ grep '^NEBIUS_API_KEY=' "$HOME/.hermes/.env" >/dev/null && echo "Hermes key entr
 
 Do not print the key while debugging.
 
-## 9. Switch Models
+## 10. Switch Models
 
 After the default works, test aliases one at a time:
 
@@ -274,7 +294,7 @@ model name inside chat:
 
 Keep Qwen as the default until a replacement passes real coding-agent tasks.
 
-## 10. Restart Only If Needed
+## 11. Restart Only If Needed
 
 If a long-running Hermes process does not pick up config changes, restart the
 existing process using the same mechanism that already manages it on the VPS.
