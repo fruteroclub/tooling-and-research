@@ -2,7 +2,7 @@
 project: tooling-and-research
 schema_version: "1.0"
 created: Fri Jul 24 2026 02:23:40 GMT-0600 (Central Standard Time)
-updated: 2026-07-24T09:42:06.060Z
+updated: 2026-07-24T09:42:06.218Z
 default_workflow: [backlog, todo, in_progress, review, done]
 id_prefix: TASK
 next_id: 3
@@ -12,7 +12,7 @@ next_id: 3
 
 | Agent | Type | Role | Status | Working On | Last Active | Trust Level |
 |-------|------|------|--------|------------|-------------|-------------|
-| @codex | bot | engineer | working | TASK-002 | 2026-07-24T09:42:06.060Z | trusted |
+| @codex | bot | engineer | idle | - | 2026-07-24T09:42:06.218Z | trusted |
 
 ---
 
@@ -69,13 +69,13 @@ history:
 
 ```yaml
 id: TASK-002
-status: in_progress
+status: done
 priority: medium
 assigned_to: null
-claimed_by: "@codex"
+claimed_by: null
 created_by: "@troopdegen"
 created_at: 2026-07-24T09:41:18.816Z
-updated_at: 2026-07-24T09:42:06.060Z
+updated_at: 2026-07-24T09:42:06.218Z
 tags:
   - pi-coding-agent-daily-driver
   - docs
@@ -95,6 +95,11 @@ history:
     note: Added the optional 'Add More Models Safely' section to the Pi Nebius VPS
       runbook with a Pi-ready prompt, model candidates, backup rules,
       validation, and rollback guidance.
+  - ts: 2026-07-24T09:42:06.218Z
+    who: "@codex"
+    action: completed
+    from: in_progress
+    to: done
 ```
 
 > Document a safe prompt for asking Pi Coding Agent to expand the Nebius Token Factory model list without breaking the live default config.
