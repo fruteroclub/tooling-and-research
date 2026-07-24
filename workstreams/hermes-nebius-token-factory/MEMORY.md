@@ -19,3 +19,9 @@
   `~/.hermes/config.yaml` and `~/.hermes/.env`, sources the Pi env only as a
   key source, writes only Hermes files, and idempotently merges the named
   Nebius custom provider plus aliases.
+- 2026-07-24: Hermes provider smoke test passed on the VPS, but Telegram DMs
+  failed with `ImportError: cannot import name '_is_hermes_internal_secret' from
+  'tools.environments.local'`. Upstream Hermes currently defines that helper,
+  so this indicates a mixed-version `~/.hermes/hermes-agent` checkout. Added
+  `code/scripts/repair-hermes-runtime-version-skew.sh` to update a clean
+  checkout and verify the import before gateway restart.

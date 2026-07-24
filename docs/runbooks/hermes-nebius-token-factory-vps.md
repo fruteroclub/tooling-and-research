@@ -353,6 +353,39 @@ Use the direct curl smoke test first. If curl works, the problem is Hermes
 config shape, not Token Factory access. Re-check `custom_providers`, `key_env`,
 and `model.provider`.
 
+### Telegram DMs Fail With `_is_hermes_internal_secret` ImportError
+
+If `hermes chat` works but Telegram DMs return an error like this:
+
+```text
+ImportError: cannot import name '_is_hermes_internal_secret' from 'tools.environments.local'
+```
+
+the provider config is not the problem. The Hermes agent checkout is likely
+version-skewed: one updated file imports a helper that the local
+`tools/environments/local.py` file does not yet define.
+
+Run the runtime repair script:
+
+```bash
+curl -fsSL https://raw.githubusercontent.com/fruteroclub/tooling-and-research/main/code/scripts/repair-hermes-runtime-version-skew.sh | bash
+```
+
+Then restart the existing Hermes gateway process. If it is running manually on
+the VPS, this is usually enough:
+
+```bash
+pkill -f 'python -m hermes_cli.main gateway run' || true
+"$HOME/.hermes/hermes-agent/venv/bin/python" -m hermes_cli.main gateway run --replace
+```
+
+If Hermes is managed by `systemd --user`, restart that service instead:
+
+```bash
+systemctl --user restart hermes
+systemctl --user status hermes --no-pager
+```
+
 ## References
 
 - Hermes configuration:
